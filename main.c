@@ -2,7 +2,7 @@
 
 int main(void)
 {
-	const int AES_ROUND = 10;		// 10, 12, 14
+	const int AES_ROUND = 10;	// 10, 12, 14
 	const int AES_KEY_SIZE = 64;	// 128, 192, 256 bits
 	const int AES_BLOCK_SIZE = 64;	// 128 bits only
 

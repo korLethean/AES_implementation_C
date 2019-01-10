@@ -32,6 +32,14 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 		return error_code;
 	}
 
+	int round_kyes[ROUND][KEY_SIZE];
+
+	// TODO: zero round add round key
+
+	// TODO: loop substitute -> shift -> mix(except when final round) -> add rk
+
+	// TODO: ciphertext output
+
 	return error_code;
 }
 

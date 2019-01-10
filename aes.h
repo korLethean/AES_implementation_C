@@ -19,6 +19,8 @@ typedef uint32_t aes_err;
 #define AES_KEY_LEN_ERR	0x02
 #define AES_ROUND_ERR	0x03
 
+//TODO: parameter needed
+aes_err key_expansion();
 
 //TODO: parameter needed
 aes_err add_round_key();
