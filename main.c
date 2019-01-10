@@ -13,23 +13,31 @@ int main(void)
 	int const *AES_ROUND;
 	int const *AES_KEY_SIZE;
 
+	char *key128 = "AABB09182736CCDD";
+	char *key192 = "AABB09182736CCDDAABB0918";
+	char *key256 = "AABB09182736CCDDAABB09182736CCDD";
+	char *key;
+
 	// When change the AES mode, change this variable 0 = 128, 1 = 192, 2 = 256
-	const int AES_MODE = 1;
+	const int AES_MODE = 0;
 
 	if(AES_MODE == 0)
 	{
 		AES_ROUND = &AES128_ROUND;
 		AES_KEY_SIZE = &AES128_KEY_SIZE;
+		key = key128;
 	}
 	else if(AES_MODE == 1)
 	{
 		AES_ROUND = &AES192_ROUND;
 		AES_KEY_SIZE = &AES192_KEY_SIZE;
+		key = key192;
 	}
 	else if(AES_MODE == 2)
 	{
 		AES_ROUND = &AES256_ROUND;
 		AES_KEY_SIZE = &AES256_KEY_SIZE;
+		key = key256;
 	}
 	else
 	{
@@ -44,19 +52,13 @@ int main(void)
 	char restoretext[AES_BLOCK_SIZE];
 	char restoredtext_c[AES_BLOCK_SIZE / 4];
 
-	char *key = "AABB09182736CCDDAABB09182736CCDD";
-	int round_key[*AES_ROUND][*AES_KEY_SIZE];
+	int round_key[*AES_ROUND][AES_BLOCK_SIZE];
 
 	aes_err error_code = AES_SUCCESS;
 
 	/** for check plain_text, key **/
-	/*printf("Plaintext:\t");
-	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
-		printf("%d", plaintext[i]);
-	printf("\nKey:\t\t");
-	for(int i = 0 ; i < AES_KEY_SIZE ; i++)
-		printf("%d", key[i]);
-	printf("\n");*/
+	//printf("Plaintext:\t%s\n", plaintext);
+	//printf("Key:\t\t%s\n", key);
 	/*******************************/
 
 	error_code = encryption(*AES_ROUND, *AES_KEY_SIZE, AES_BLOCK_SIZE, plaintext, key, ciphertext);
