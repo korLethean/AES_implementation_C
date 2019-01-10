@@ -14,10 +14,11 @@ typedef uint32_t aes_err;
 #include <stdlib.h>
 #include <string.h>
 
-#define AES_SUCCESS		0x00
+#define AES_SUCCESS	0x00
 #define AES_BLK_LEN_ERR 0x01
 #define AES_KEY_LEN_ERR	0x02
 #define AES_ROUND_ERR	0x03
+#define AES_STD_ERR	0x04
 
 //TODO: parameter needed
 aes_err key_expansion();
@@ -35,7 +36,7 @@ aes_err shift_rows();
 aes_err mix_columns();
 
 //TODO: parameter needed
-aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int *plaintext, int *key, int *ciphertext);
+aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext);
 
 //TODO: parameter needed
 aes_err decryption();
