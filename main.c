@@ -18,8 +18,16 @@ int main(void)
 	char *key256 = "AABB09182736CCDDAABB09182736CCDD";
 	char *key;
 
+	char *plaintext= "123456ABCD132536";
+	char plaintext_c[AES_BLOCK_SIZE / 4];
+	char ciphertext[AES_BLOCK_SIZE];
+	char ciphertext_c[AES_BLOCK_SIZE / 4];
+	char restoretext[AES_BLOCK_SIZE];
+	char restoredtext_c[AES_BLOCK_SIZE / 4];
+
 	// When change the AES mode, change this variable 0 = 128, 1 = 192, 2 = 256
 	const int AES_MODE = 0;
+	//***********************************************************************//
 
 	if(AES_MODE == 0)
 	{
@@ -44,15 +52,6 @@ int main(void)
 		printf("Wrong AES standard");
 		return 0;
 	}
-
-	char *plaintext= "123456ABCD132536";
-	char plaintext_c[AES_BLOCK_SIZE / 4];
-	char ciphertext[AES_BLOCK_SIZE];
-	char ciphertext_c[AES_BLOCK_SIZE / 4];
-	char restoretext[AES_BLOCK_SIZE];
-	char restoredtext_c[AES_BLOCK_SIZE / 4];
-
-	int round_key[*AES_ROUND][AES_BLOCK_SIZE];
 
 	aes_err error_code = AES_SUCCESS;
 
@@ -82,6 +81,8 @@ int main(void)
 		printf("AES Encryption error occurred: Wrong matched with key size and rounds \n");
 		return 0;
 	}
+	else
+		printf("AES Encryption \n");
 
 	return 0;
 }

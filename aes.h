@@ -35,7 +35,6 @@ aes_err shift_rows();
 //TODO: parameter needed
 aes_err mix_columns();
 
-//TODO: parameter needed
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext);
 
 //TODO: parameter needed

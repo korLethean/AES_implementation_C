@@ -48,6 +48,8 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 			state[j][i] = plaintext[i * 4 + j];
 	}
 
+	// TODO: key expansion
+
 	// TODO: zero round add round key
 
 	for(int i = 0 ; i < ROUND ; i++)
