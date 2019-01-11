@@ -20,6 +20,8 @@ typedef uint32_t aes_err;
 #define AES_ROUND_ERR	0x03
 #define AES_STD_ERR	0x04
 
+const int S_BOX_TABLE[256];
+
 void g(int *w3, int *gw);
 
 //TODO: parameter needed
