@@ -19,19 +19,20 @@ const int S_BOX_TABLE[256] =
 	0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 	};
 
-void g(int *w3, int *gw)
+void g(const int WORD, int *w3, int *gw)
 {
-	gw[0] = w3[1];
-	gw[1] = w3[2];
-	gw[2] = w3[3];
-	gw[3] = w3[0];
+	for(int i = 0 ; i < WORD ; i++)
+	{
+		if(i == (WORD - 1))
+			gw[i] = w3[0];
+		else
+			gw[i] = w3[i + 1];
+	}
 
-	gw[0] = S_BOX_TABLE[gw[0]];
-	gw[1] = S_BOX_TABLE[gw[1]];
-	gw[2] = S_BOX_TABLE[gw[2]];
-	gw[3] = S_BOX_TABLE[gw[3]];
+	for(int i = 0 ; i < WORD ; i++)
+		gw[i] = S_BOX_TABLE[gw[i]];
 
-	// TODO: add round constant
+	gw[0] ^= 1;
 }
 
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE])
@@ -46,7 +47,7 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 			w[i][j] = zero_round_key[i * word + j];
 	}
 
-	g(w[3], gw);
+	g(word, w[3], gw);
 
 	// TODO: w[4] = w[0] ^ gw[3]
 	// TODO: w[5] = w[4] ^ w[1]
