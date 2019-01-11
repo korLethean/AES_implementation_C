@@ -20,8 +20,10 @@ typedef uint32_t aes_err;
 #define AES_ROUND_ERR	0x03
 #define AES_STD_ERR	0x04
 
+void g(int *w3, int *gw);
+
 //TODO: parameter needed
-aes_err key_expansion();
+aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE]);
 
 //TODO: parameter needed
 aes_err add_round_key();

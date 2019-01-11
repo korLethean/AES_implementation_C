@@ -5,9 +5,9 @@ int main(void)
 	const int AES128_ROUND = 10;
 	const int AES192_ROUND = 12;
 	const int AES256_ROUND = 14;
-	const int AES128_KEY_SIZE = 64;
-	const int AES192_KEY_SIZE = 96;
-	const int AES256_KEY_SIZE = 128;
+	const int AES128_KEY_SIZE = 16;
+	const int AES192_KEY_SIZE = 24;
+	const int AES256_KEY_SIZE = 32;
 	const int AES_BLOCK_SIZE = 64;	// 128 bits only
 
 	int const *AES_ROUND;
@@ -82,7 +82,7 @@ int main(void)
 		return 0;
 	}
 	else
-		printf("AES Encryption \n");
+		printf("AES Encryption processed \n");
 
 	return 0;
 }
