@@ -25,13 +25,10 @@ const int ROUND_CONSTANT[14] =
 
 void g(const int WORD, const int ROUND, int *w3, int *gw)
 {
-	for(int i = 0 ; i < WORD ; i++)
-	{
-		if(i == (WORD - 1))
-			gw[i] = w3[0];
-		else
-			gw[i] = w3[i + 1];
-	}
+	gw[0] = w3[1];
+	gw[1] = w3[2];
+	gw[2] = w3[3];
+	gw[3] = w3[0];
 
 	for(int i = 0 ; i < WORD ; i++)
 		gw[i] = S_BOX_TABLE[gw[i]];
@@ -63,13 +60,8 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 					round_keys[i][j * 4 + k] = w[0][k] ^ gw[k];
 				else
 					round_keys[i][j * 4 + k] = round_keys[i][j * 4 + k - word] ^ w[j][k];
-			}
-		}
-
-		for(int j = 0 ; j < 4 ; j++)
-		{
-			for(int k = 0 ; k < word ; k++)
 				w[j][k] = round_keys[i][j * word + k];
+			}
 		}
 
 		g(word, i + 1, w[3], gw);
@@ -141,13 +133,13 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 		return error_code;
 
 	//** for check round_key **//
-	/*for(int i = 0 ; i < ROUND ; i++)
+	for(int i = 0 ; i < ROUND ; i++)
 	{
 		printf("Round Key %d: ", i + 1);
 		for(int j = 0 ; j < KEY_SIZE ; j++)
 			printf("%x ", round_keys[i][j]);
 		printf("\n");
-	}*/
+	}
 	//*************************//
 
 	// TODO: zero round add round key
