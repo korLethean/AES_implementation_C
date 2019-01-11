@@ -19,7 +19,11 @@ const int S_BOX_TABLE[256] =
 	0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 	};
 
-void g(const int WORD, int *w3, int *gw)
+// 14th value never used
+const int ROUND_CONSTANT[14] =
+	{0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x00};
+
+void g(const int WORD, const int ROUND, int *w3, int *gw)
 {
 	for(int i = 0 ; i < WORD ; i++)
 	{
@@ -32,13 +36,13 @@ void g(const int WORD, int *w3, int *gw)
 	for(int i = 0 ; i < WORD ; i++)
 		gw[i] = S_BOX_TABLE[gw[i]];
 
-	gw[0] ^= 1;
+	gw[0] ^= ROUND_CONSTANT[ROUND];
 }
 
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE])
 {
 	const int word = KEY_SIZE / 4;
-	int w[ROUND][word];
+	int w[4][word];
 	int gw[word];
 
 	for(int i = 0 ; i < 4 ; i++)
@@ -47,12 +51,29 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 			w[i][j] = zero_round_key[i * word + j];
 	}
 
-	g(word, w[3], gw);
+	g(word, 0, w[3], gw);
 
-	// TODO: w[4] = w[0] ^ gw[3]
-	// TODO: w[5] = w[4] ^ w[1]
-	// TODO: w[6] = w[5] ^ w[2]
-	// TODO: w[7] = w[6] ^ w[3] ... loop
+	for(int i = 0 ; i < ROUND ; i++)
+	{
+		for(int j = 0 ; j < 4 ; j++)
+		{
+			for(int k = 0 ; k < word ; k++)
+			{
+				if(!j)
+					round_keys[i][j * 4 + k] = w[0][k] ^ gw[k];
+				else
+					round_keys[i][j * 4 + k] = round_keys[i][j * 4 + k - word] ^ w[j][k];
+			}
+		}
+
+		for(int j = 0 ; j < 4 ; j++)
+		{
+			for(int k = 0 ; k < word ; k++)
+				w[j][k] = round_keys[i][j * word + k];
+		}
+
+		g(word, i + 1, w[3], gw);
+	}
 
 	return AES_SUCCESS;
 }
@@ -118,6 +139,16 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 	error_code = key_expansion(ROUND, KEY_SIZE, zero_round_key, round_keys);
 	if(error_code != AES_SUCCESS)
 		return error_code;
+
+	//** for check round_key **//
+	/*for(int i = 0 ; i < ROUND ; i++)
+	{
+		printf("Round Key %d: ", i + 1);
+		for(int j = 0 ; j < KEY_SIZE ; j++)
+			printf("%x ", round_keys[i][j]);
+		printf("\n");
+	}*/
+	//*************************//
 
 	// TODO: zero round add round key
 
