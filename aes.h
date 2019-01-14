@@ -22,14 +22,14 @@ typedef uint32_t aes_err;
 
 const int S_BOX_TABLE[256];
 
-void g(const int WORD, const int ROUND, int *w3, int *gw);
-
 const int ROUND_CONSTANT[14];
+
+void g(const int WORD, const int ROUND, int *w3, int *gw);
 
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE]);
 
 //TODO: parameter needed
-aes_err add_round_key();
+aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key);
 
 //TODO: parameter needed
 aes_err substitute_bytes();

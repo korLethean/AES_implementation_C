@@ -42,6 +42,9 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 	int w[4][word];
 	int gw[word];
 
+	if(!((word == 4) || (word == 6) || (word == 8)))
+		return AES_KEY_LEN_ERR;
+
 	for(int i = 0 ; i < 4 ; i++)
 	{
 		for(int j = 0 ; j < word ; j++)
@@ -65,6 +68,22 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 		}
 
 		g(word, i + 1, w[3], gw);
+	}
+
+	return AES_SUCCESS;
+}
+
+aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key)
+{
+	int word = KEY_SIZE / 4;
+
+	if(!((word == 4) || (word == 6) || (word == 8)))
+		return AES_KEY_LEN_ERR;
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		for(int j = 0 ; j < word ; j++)
+			state[j][i] = state[j][i] ^ round_key[i * word + j];
 	}
 
 	return AES_SUCCESS;
@@ -118,13 +137,23 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 			state[j][i] = plaintext[i * 4 + j];
 	}
 
+	//** for check state **//
+	/*printf("State: ");
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		for(int j = 0 ; j < 4 ; j++)
+			printf("%02x ", state[j][i]);
+	}
+	printf("\n");*/
+	//*********************//
+
 	for(int i = 0 ; i < KEY_SIZE ; i++)
 		zero_round_key[i] = key[i];
 
 	//** for check zero_round_key **//
 	/*printf("Zero round key: ");
 	for(int i = 0 ; i < KEY_SIZE ; i++)
-		printf("%x", zero_round_key[i]);
+		printf("%02x ", zero_round_key[i]);
 	printf("\n");*/
 	//******************************//
 
@@ -133,16 +162,28 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 		return error_code;
 
 	//** for check round_key **//
-	for(int i = 0 ; i < ROUND ; i++)
+	/*for(int i = 0 ; i < ROUND ; i++)
 	{
 		printf("Round Key %d: ", i + 1);
 		for(int j = 0 ; j < KEY_SIZE ; j++)
-			printf("%x ", round_keys[i][j]);
+			printf("%02x ", round_keys[i][j]);
 		printf("\n");
-	}
+	}*/
 	//*************************//
 
-	// TODO: zero round add round key
+	error_code = add_round_key(KEY_SIZE, state, zero_round_key);
+	if(error_code != AES_SUCCESS)
+		return error_code;
+
+	//** for check after add round_key **//
+	/*printf("after add zero round key: ");
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		for(int j = 0 ; j < 4 ; j++)
+			printf("%02x ", state[j][i]);
+	}
+	printf("\n");*/
+	//***********************************//
 
 	for(int i = 0 ; i < ROUND ; i++)
 	{
