@@ -23,6 +23,13 @@ const int S_BOX_TABLE[256] =
 const int ROUND_CONSTANT[14] =
 	{0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x00};
 
+const int MIX_COLUMN_BYTES[4][4] =
+	{0x02, 0x03, 0x01, 0x01,
+	0x01, 0x02, 0x03, 0x01,
+	0x01, 0x01, 0x02, 0x03,
+	0x03, 0x01, 0x01, 0x02
+	};
+
 void g(const int WORD, const int ROUND, int *w3, int *gw)
 {
 	gw[0] = w3[1];
@@ -34,6 +41,24 @@ void g(const int WORD, const int ROUND, int *w3, int *gw)
 		gw[i] = S_BOX_TABLE[gw[i]];
 
 	gw[0] ^= ROUND_CONSTANT[ROUND];
+}
+
+void xtime(const int bytes, int state, int *temp)
+{
+	*temp = state;
+
+	if(bytes == 2)
+		*temp <<= 1;
+	else if(bytes == 3)
+	{
+		*temp <<= 1;
+		*temp ^= state;
+	}
+
+	if(state & 0x80)
+		*temp ^= 0x1b;
+
+	*temp &= 0xFF;
 }
 
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE])
@@ -100,6 +125,22 @@ aes_err shift_rows(const int SHIFT, int *state)
 		for(int j = 0 ; j < 3 ; j++)
 			state[j] = state[j + 1];
 		state[3] = temp;
+	}
+
+	return AES_SUCCESS;
+}
+
+aes_err mix_columns(int (*state)[4])
+{
+	for(int m_col = 0 ; m_col < 4 ; m_col++)
+	{
+		for(int s_row = 0 ; s_row < 4 ; s_row++)
+		{
+			int temp[4];
+			for(int m_row = 0 ; m_row < 4 ; m_row++)
+				xtime(MIX_COLUMN_BYTES[m_col][m_row], state[m_row][s_row], &temp[m_row]);
+			state[s_row][m_col] = temp[0] ^ temp[1] ^ temp[2] ^ temp[3];
+		}
 	}
 
 	return AES_SUCCESS;
@@ -216,9 +257,18 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 				return error_code;
 		}
 
+		if(i < ROUND - 1)
+			mix_columns(state);
 
+		printf("mix: ");
+		for(int a = 0 ; a < 4 ; a++)
+		{
+			for(int b = 0 ; b < 4 ; b++)
+				printf("%02x ", state[b][a]);
+		}
+		printf("\n");
 
-		// TODO: shift -> mix(except when final round) -> add rk
+		// TODO: ad Rk
 
 		// TODO: ciphertext output
 	}

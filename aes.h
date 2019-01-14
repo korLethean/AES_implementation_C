@@ -25,7 +25,11 @@ const int S_BOX_TABLE[256];
 
 const int ROUND_CONSTANT[14];
 
+const int MIX_COLUMN_BYTES[4][4];
+
 void g(const int WORD, const int ROUND, int *w3, int *gw);
+
+void xtime(const int bytes, int state, int *temp);
 
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE]);
 
@@ -33,8 +37,7 @@ aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key);
 
 aes_err shift_rows(const int SHIFT, int *state);
 
-//TODO: parameter needed
-aes_err mix_columns();
+aes_err mix_columns(int (*state)[4]);
 
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext);
 
