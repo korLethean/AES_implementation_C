@@ -45,29 +45,29 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 	if(!((word == 4) || (word == 6) || (word == 8)))
 		return AES_KEY_LEN_ERR;
 
-	for(int i = 0 ; i < 4 ; i++)
+	for(int col = 0 ; col < 4 ; col++)
 	{
-		for(int j = 0 ; j < word ; j++)
-			w[i][j] = zero_round_key[i * word + j];
+		for(int row = 0 ; row < word ; row++)
+			w[col][row] = zero_round_key[col * word + row];
 	}
 
 	g(word, 0, w[3], gw);
 
-	for(int i = 0 ; i < ROUND ; i++)
+	for(int r_col = 0 ; r_col < ROUND ; r_col++)
 	{
-		for(int j = 0 ; j < 4 ; j++)
+		for(int w_col = 0 ; w_col < 4 ; w_col++)
 		{
-			for(int k = 0 ; k < word ; k++)
+			for(int w_row = 0 ; w_row < word ; w_row++)
 			{
-				if(!j)
-					round_keys[i][j * 4 + k] = w[0][k] ^ gw[k];
+				if(!w_col)
+					round_keys[r_col][w_col * 4 + w_row] = w[0][w_row] ^ gw[w_row];
 				else
-					round_keys[i][j * 4 + k] = round_keys[i][j * 4 + k - word] ^ w[j][k];
-				w[j][k] = round_keys[i][j * word + k];
+					round_keys[r_col][w_col * 4 + w_row] = round_keys[r_col][w_col * 4 + w_row - word] ^ w[w_col][w_row];
+				w[w_col][w_row] = round_keys[r_col][w_col * word + w_row];
 			}
 		}
 
-		g(word, i + 1, w[3], gw);
+		g(word, r_col + 1, w[3], gw);
 	}
 
 	return AES_SUCCESS;
@@ -80,10 +80,10 @@ aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key)
 	if(!((word == 4) || (word == 6) || (word == 8)))
 		return AES_KEY_LEN_ERR;
 
-	for(int i = 0 ; i < 4 ; i++)
+	for(int row = 0 ; row < 4 ; row++)
 	{
-		for(int j = 0 ; j < word ; j++)
-			state[j][i] = state[j][i] ^ round_key[i * word + j];
+		for(int col = 0 ; col < word ; col++)
+			state[col][row] = state[col][row] ^ round_key[row * word + col];
 	}
 
 	return AES_SUCCESS;
@@ -187,7 +187,19 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 
 	for(int i = 0 ; i < ROUND ; i++)
 	{
-		// TODO: loop substitute -> shift -> mix(except when final round) -> add rk
+		for(int row = 0 ; row < 4 ; row++)
+		{
+			for(int col = 0 ; col < 4 ; col++)
+				state[col][row] = S_BOX_TABLE[state[col][row]];
+		}
+		printf("\n");
+
+		for(int col = 1 ; col < 4 ; col++)
+		{
+			// shift
+		}
+
+		// TODO: shift -> mix(except when final round) -> add rk
 
 		// TODO: ciphertext output
 	}
