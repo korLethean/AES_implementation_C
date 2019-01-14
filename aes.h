@@ -26,7 +26,6 @@ void g(const int WORD, const int ROUND, int *w3, int *gw);
 
 const int ROUND_CONSTANT[14];
 
-//TODO: parameter needed
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE]);
 
 //TODO: parameter needed
@@ -45,11 +44,5 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 
 //TODO: parameter needed
 aes_err decryption();
-
-int H2B(char value);
-
-void hex_string_to_binary_array(const int len, char *string, int *binary);
-
-void binary_to_hex_string_array(int *binary, int *string);
 
 #endif /* AES_H_ */
