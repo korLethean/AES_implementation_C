@@ -19,6 +19,7 @@ typedef uint32_t aes_err;
 #define AES_KEY_LEN_ERR	0x02
 #define AES_ROUND_ERR	0x03
 #define AES_STD_ERR	0x04
+#define AES_SHIFT_ERR	0x05
 
 const int S_BOX_TABLE[256];
 
@@ -30,8 +31,7 @@ aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round
 
 aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key);
 
-//TODO: parameter needed
-aes_err shift_rows();
+aes_err shift_rows(const int SHIFT, int *state);
 
 //TODO: parameter needed
 aes_err mix_columns();

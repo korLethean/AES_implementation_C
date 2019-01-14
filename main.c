@@ -81,6 +81,11 @@ int main(void)
 		printf("AES Encryption error occurred: Wrong matched with key size and rounds \n");
 		return 0;
 	}
+	else if(error_code == AES_SHIFT_ERR)
+	{
+		printf("AES Encryption error occurred: Out of index bounds when shifting \n");
+		return 0;
+	}
 	else
 		printf("AES Encryption processed \n");
 

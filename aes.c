@@ -89,6 +89,22 @@ aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key)
 	return AES_SUCCESS;
 }
 
+aes_err shift_rows(const int SHIFT, int *state)
+{
+	if(SHIFT > 3)
+		return AES_SHIFT_ERR;
+
+	for(int i = 0 ; i < SHIFT ; i++)
+	{
+		int temp = state[0];
+		for(int j = 0 ; j < 3 ; j++)
+			state[j] = state[j + 1];
+		state[3] = temp;
+	}
+
+	return AES_SUCCESS;
+}
+
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext)
 {
 	aes_err error_code = AES_SUCCESS;
@@ -121,7 +137,7 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 		return error_code;
 	}
 
-	if(BLK_SIZE != 64)
+	if(!((BLK_SIZE == 64) || (strlen(plaintext) == BLK_SIZE)))
 	{
 		error_code = AES_BLK_LEN_ERR;
 		return error_code;
@@ -192,12 +208,15 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 			for(int col = 0 ; col < 4 ; col++)
 				state[col][row] = S_BOX_TABLE[state[col][row]];
 		}
-		printf("\n");
 
 		for(int col = 1 ; col < 4 ; col++)
 		{
-			// shift
+			error_code = shift_rows(col, state[col]);
+			if(error_code != AES_SUCCESS)
+				return error_code;
 		}
+
+
 
 		// TODO: shift -> mix(except when final round) -> add rk
 
