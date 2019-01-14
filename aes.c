@@ -63,6 +63,15 @@ void xtime(const int bytes, int state, int *temp)
 	*temp &= 0xFF;
 }
 
+void copy(int (*state)[4], int *ciphertext)
+{
+	for(int row = 0 ; row < 4 ; row++)
+	{
+		for(int col = 0 ; col < 4 ; col++)
+			ciphertext[row * 4 + col] = state[col][row];
+	}
+}
+
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE])
 {
 	const int word = KEY_SIZE / 4;
@@ -156,7 +165,7 @@ aes_err mix_columns(int (*state)[4])
 	return AES_SUCCESS;
 }
 
-aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext)
+aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, int *ciphertext)
 {
 	aes_err error_code = AES_SUCCESS;
 
@@ -268,12 +277,27 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 		}
 
 		if(i < ROUND - 1)
-			mix_columns(state);
+		{
+			error_code = mix_columns(state);
 
-		// TODO: ad Rk
+			if(error_code != AES_SUCCESS)
+				return error_code;
+		}
 
-		// TODO: ciphertext output
+		error_code = add_round_key(KEY_SIZE, state, round_keys[i]);
+
+		//** for check round result **//
+		printf("Round %d:\t", i + 1);
+		for(int j = 0 ; j < 4 ; j++)
+		{
+			for(int k = 0 ; k < 4 ; k++)
+				printf("%02x ", state[k][j]);
+		}
+		printf("\n");
+		//****************************//
 	}
+
+	copy(state, ciphertext);
 
 	return error_code;
 }

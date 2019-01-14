@@ -31,6 +31,8 @@ void g(const int WORD, const int ROUND, int *w3, int *gw);
 
 void xtime(const int bytes, int state, int *temp);
 
+void copy(int (*state)[4], int *ciphertext);
+
 aes_err key_expansion(const int ROUND, const int KEY_SIZE, int const *zero_round_key, int (*round_keys)[KEY_SIZE]);
 
 aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key);
@@ -39,7 +41,7 @@ aes_err shift_rows(const int SHIFT, int *state);
 
 aes_err mix_columns(int (*state)[4]);
 
-aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, char *ciphertext);
+aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, int *ciphertext);
 
 //TODO: parameter needed
 aes_err decryption();

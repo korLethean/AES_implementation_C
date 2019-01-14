@@ -8,7 +8,7 @@ int main(void)
 	const int AES128_KEY_SIZE = 16;
 	const int AES192_KEY_SIZE = 24;
 	const int AES256_KEY_SIZE = 32;
-	const int AES_BLOCK_SIZE = 64;	// 128 bits only
+	const int AES_BLOCK_SIZE = 16;	// 128 bits only
 
 	int const *AES_ROUND;
 	int const *AES_KEY_SIZE;
@@ -19,11 +19,8 @@ int main(void)
 	char *key;
 
 	char *plaintext= "123456ABCD132536";
-	char plaintext_c[AES_BLOCK_SIZE / 4];
-	char ciphertext[AES_BLOCK_SIZE];
-	char ciphertext_c[AES_BLOCK_SIZE / 4];
-	char restoretext[AES_BLOCK_SIZE];
-	char restoredtext_c[AES_BLOCK_SIZE / 4];
+	int ciphertext[AES_BLOCK_SIZE];
+	int restoretext[AES_BLOCK_SIZE];
 
 	// When change the AES mode, change this variable 0 = 128, 1 = 192, 2 = 256
 	const int AES_MODE = 0;
@@ -88,6 +85,11 @@ int main(void)
 	}
 	else
 		printf("AES Encryption processed \n");
+
+	printf("Ciphertext:\t");
+	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
+		printf("%02x ", ciphertext[i]);
+	printf("\n");
 
 	return 0;
 }
