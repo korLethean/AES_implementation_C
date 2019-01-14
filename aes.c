@@ -47,6 +47,8 @@ void xtime(const int bytes, int state, int *temp)
 {
 	*temp = state;
 
+	if(bytes == 1)
+		return;
 	if(bytes == 2)
 		*temp <<= 1;
 	else if(bytes == 3)
@@ -132,14 +134,22 @@ aes_err shift_rows(const int SHIFT, int *state)
 
 aes_err mix_columns(int (*state)[4])
 {
+	int state_origin[4][4];
+
+	for(int col = 0 ; col < 4 ; col++)
+	{
+		for(int row = 0 ; row < 4 ; row++)
+			state_origin[col][row] = state[col][row];
+	}
+
 	for(int m_col = 0 ; m_col < 4 ; m_col++)
 	{
 		for(int s_row = 0 ; s_row < 4 ; s_row++)
 		{
 			int temp[4];
 			for(int m_row = 0 ; m_row < 4 ; m_row++)
-				xtime(MIX_COLUMN_BYTES[m_col][m_row], state[m_row][s_row], &temp[m_row]);
-			state[s_row][m_col] = temp[0] ^ temp[1] ^ temp[2] ^ temp[3];
+				xtime(MIX_COLUMN_BYTES[m_col][m_row], state_origin[m_row][s_row], &temp[m_row]);
+			state[m_col][s_row] = temp[0] ^ temp[1] ^ temp[2] ^ temp[3];
 		}
 	}
 
@@ -259,14 +269,6 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 
 		if(i < ROUND - 1)
 			mix_columns(state);
-
-		printf("mix: ");
-		for(int a = 0 ; a < 4 ; a++)
-		{
-			for(int b = 0 ; b < 4 ; b++)
-				printf("%02x ", state[b][a]);
-		}
-		printf("\n");
 
 		// TODO: ad Rk
 
