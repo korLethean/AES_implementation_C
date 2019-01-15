@@ -18,7 +18,7 @@ int main(void)
 	char *key256 = "AABB09182736CCDDAABB09182736CCDD";
 	char *key;
 
-	char *plaintext= "123456ABCD132536";
+	char *plaintext = "123456ABCD132536";
 	int ciphertext[AES_BLOCK_SIZE];
 	int ciphertext_c[AES_BLOCK_SIZE];
 	int restoretext[AES_BLOCK_SIZE];

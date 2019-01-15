@@ -69,13 +69,14 @@ void g(const int WORD, const int ROUND, int *w3, int *gw)
 	gw[0] ^= ROUND_CONSTANT[ROUND];
 }
 
+// TODO: decrytion error fix needed
 void xtime(const int bytes, int state, int *temp)
 {
 	*temp = state;
 
 	if(bytes == 1)
 		return;
-	if(bytes == 2)
+	else if(bytes == 2)
 		*temp <<= 1;
 	else if(bytes == 3)
 	{
