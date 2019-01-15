@@ -29,6 +29,8 @@ const int ROUND_CONSTANT[14];
 
 const int MIX_COLUMN_BYTES[4][4];
 
+const int INV_MIX_COLUMN_BYTES[4][4];
+
 void g(const int WORD, const int ROUND, int *w3, int *gw);
 
 void xtime(const int bytes, int state, int *temp);
@@ -43,11 +45,12 @@ aes_err shift_rows(const int SHIFT, int *state);
 
 aes_err inv_shift_rows(const int SHIFT, int *state);
 
-aes_err mix_columns(int (*state)[4]);
+aes_err mix_columns(int (*state)[4], int const (*TABLE)[4]);
+
+aes_err inv_mix_columns(int (*state)[4]);
 
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, int *ciphertext);
 
-//TODO: parameter needed
 aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int *ciphertext, char *key, int *restoretext);
 
 #endif /* AES_H_ */

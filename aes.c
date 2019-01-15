@@ -49,6 +49,13 @@ const int MIX_COLUMN_BYTES[4][4] =
 	{0x03, 0x01, 0x01, 0x02}
 	};
 
+const int INV_MIX_COLUMN_BYTES[4][4] =
+	{{0x0e, 0x0b, 0x0d, 0x09},
+	{0x09, 0x0e, 0x0b, 0x0d},
+	{0x0d, 0x09, 0x0e, 0x0b},
+	{0x0b, 0x0d, 0x09, 0x0e}
+	};
+
 void g(const int WORD, const int ROUND, int *w3, int *gw)
 {
 	gw[0] = w3[1];
@@ -168,15 +175,15 @@ aes_err inv_shift_rows(const int SHIFT, int *state)
 	for(int i = 0 ; i < SHIFT ; i++)
 	{
 		int temp = state[3];
-		for(int j = 0 ; j < 3 ; j++)
-			state[j + 1] = state[j];
+		for(int j = 3 ; j > 0 ; j--)
+			state[j] = state[j - 1];
 		state[0] = temp;
 	}
 
 	return AES_SUCCESS;
 }
 
-aes_err mix_columns(int (*state)[4])
+aes_err mix_columns(int (*state)[4], int const (*TABLE)[4])
 {
 	int state_origin[4][4];
 
@@ -192,7 +199,7 @@ aes_err mix_columns(int (*state)[4])
 		{
 			int temp[4];
 			for(int m_row = 0 ; m_row < 4 ; m_row++)
-				xtime(MIX_COLUMN_BYTES[m_col][m_row], state_origin[m_row][s_row], &temp[m_row]);
+				xtime(TABLE[m_col][m_row], state_origin[m_row][s_row], &temp[m_row]);
 			state[m_col][s_row] = temp[0] ^ temp[1] ^ temp[2] ^ temp[3];
 		}
 	}
@@ -313,8 +320,7 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 
 		if(i < ROUND - 1)
 		{
-			error_code = mix_columns(state);
-
+			error_code = mix_columns(state, MIX_COLUMN_BYTES);
 			if(error_code != AES_SUCCESS)
 				return error_code;
 		}
@@ -448,11 +454,12 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 		}
 
 		error_code = add_round_key(KEY_SIZE, state, inv_round_keys[i]);
+		if(error_code != AES_SUCCESS)
+			return error_code;
 
 		if(i < ROUND - 1)
-		{	// TODO: inv_mix_columns
-			error_code = mix_columns(state);
-
+		{
+			error_code = mix_columns(state, INV_MIX_COLUMN_BYTES);
 			if(error_code != AES_SUCCESS)
 				return error_code;
 		}
