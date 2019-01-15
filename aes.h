@@ -23,6 +23,8 @@ typedef uint32_t aes_err;
 
 const int S_BOX_TABLE[256];
 
+const int INV_S_BOX_TABLE[256];
+
 const int ROUND_CONSTANT[14];
 
 const int MIX_COLUMN_BYTES[4][4];
