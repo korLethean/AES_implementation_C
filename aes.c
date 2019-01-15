@@ -245,16 +245,16 @@ aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char
 	for(int i = 0 ; i < KEY_SIZE ; i++)
 		zero_round_key[i] = key[i];
 
+	error_code = key_expansion(ROUND, KEY_SIZE, zero_round_key, round_keys);
+	if(error_code != AES_SUCCESS)
+		return error_code;
+
 	//** for check zero_round_key **//
 	/*printf("Zero round key: ");
 	for(int i = 0 ; i < KEY_SIZE ; i++)
 		printf("%02x ", zero_round_key[i]);
 	printf("\n");*/
 	//******************************//
-
-	error_code = key_expansion(ROUND, KEY_SIZE, zero_round_key, round_keys);
-	if(error_code != AES_SUCCESS)
-		return error_code;
 
 	//** for check round_key **//
 	/*for(int i = 0 ; i < ROUND ; i++)
@@ -396,9 +396,9 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 		inv_round_keys[i] = round_keys[ROUND - 2 - i];
 
 	//** for check zero_round_key **//
-	/*printf("Final round key: ");
+	/*printf("Zero round key: ");
 	for(int i = 0 ; i < KEY_SIZE ; i++)
-		printf("%02x ", zero_round_key[i]);
+		printf("%02x ", inv_zero_round_key[i]);
 	printf("\n");*/
 	//******************************//
 
@@ -407,7 +407,7 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 	{
 		printf("Round Key %d: ", i + 1);
 		for(int j = 0 ; j < KEY_SIZE ; j++)
-			printf("%02x ", round_keys[i][j]);
+			printf("%02x ", inv_round_keys[i][j]);
 		printf("\n");
 	}*/
 	//*************************//
