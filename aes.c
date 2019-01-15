@@ -389,15 +389,11 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 	if(error_code != AES_SUCCESS)
 		return error_code;
 
-	//zero
-	/// 0 1 2 3 4 5 6 7 8 9
-	// zero -> 0
-	// 9 -> zero
+	inv_zero_round_key = round_keys[ROUND - 1];
+	inv_round_keys[ROUND - 1] = zero_round_key;
 
-	inv_zero_round_key = round_keys[9];
-
-	for(int i = 0 ; i < ROUND ; i++)
-		inv_round_keys[i] = round_keys[ROUND - 1 - i];
+	for(int i = 0 ; i < ROUND - 1 ; i++)
+		inv_round_keys[i] = round_keys[ROUND - 2 - i];
 
 	//** for check zero_round_key **//
 	/*printf("Final round key: ");
@@ -422,12 +418,6 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 
 	for(int i = 0 ; i < ROUND ; i++)
 	{
-		for(int row = 0 ; row < 4 ; row++)
-		{
-			for(int col = 0 ; col < 4 ; col++)
-				state[col][row] = INV_S_BOX_TABLE[state[col][row]];
-		}
-
 		for(int col = 1 ; col < 4 ; col++)
 		{	// TODO: inv_shift_row
 			error_code = shift_rows(col, state[col]);
@@ -435,15 +425,21 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 				return error_code;
 		}
 
-		if(i > 0)
+		for(int row = 0 ; row < 4 ; row++)
+		{
+			for(int col = 0 ; col < 4 ; col++)
+				state[col][row] = INV_S_BOX_TABLE[state[col][row]];
+		}
+
+		error_code = add_round_key(KEY_SIZE, state, inv_round_keys[i]);
+
+		if(i < ROUND - 1)
 		{	// TODO: inv_mix_columns
 			error_code = mix_columns(state);
 
 			if(error_code != AES_SUCCESS)
 				return error_code;
 		}
-
-		error_code = add_round_key(KEY_SIZE, state, inv_round_keys[i]);
 
 		//** for check round result **//
 		/*printf("Round %d:\t", i + 1);
