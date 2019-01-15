@@ -43,10 +43,10 @@ const int ROUND_CONSTANT[14] =
 	{0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x00};
 
 const int MIX_COLUMN_BYTES[4][4] =
-	{0x02, 0x03, 0x01, 0x01,
-	0x01, 0x02, 0x03, 0x01,
-	0x01, 0x01, 0x02, 0x03,
-	0x03, 0x01, 0x01, 0x02
+	{{0x02, 0x03, 0x01, 0x01},
+	{0x01, 0x02, 0x03, 0x01},
+	{0x01, 0x01, 0x02, 0x03},
+	{0x03, 0x01, 0x01, 0x02}
 	};
 
 void g(const int WORD, const int ROUND, int *w3, int *gw)
@@ -155,6 +155,22 @@ aes_err shift_rows(const int SHIFT, int *state)
 		for(int j = 0 ; j < 3 ; j++)
 			state[j] = state[j + 1];
 		state[3] = temp;
+	}
+
+	return AES_SUCCESS;
+}
+
+aes_err inv_shift_rows(const int SHIFT, int *state)
+{
+	if(SHIFT > 3)
+		return AES_SHIFT_ERR;
+
+	for(int i = 0 ; i < SHIFT ; i++)
+	{
+		int temp = state[3];
+		for(int j = 0 ; j < 3 ; j++)
+			state[j + 1] = state[j];
+		state[0] = temp;
 	}
 
 	return AES_SUCCESS;
@@ -419,8 +435,8 @@ aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int 
 	for(int i = 0 ; i < ROUND ; i++)
 	{
 		for(int col = 1 ; col < 4 ; col++)
-		{	// TODO: inv_shift_row
-			error_code = shift_rows(col, state[col]);
+		{
+			error_code = inv_shift_rows(col, state[col]);
 			if(error_code != AES_SUCCESS)
 				return error_code;
 		}

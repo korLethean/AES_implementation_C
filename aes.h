@@ -41,6 +41,8 @@ aes_err add_round_key(const int KEY_SIZE, int (*state)[4], int *round_key);
 
 aes_err shift_rows(const int SHIFT, int *state);
 
+aes_err inv_shift_rows(const int SHIFT, int *state);
+
 aes_err mix_columns(int (*state)[4]);
 
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, int *ciphertext);
