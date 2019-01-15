@@ -46,6 +46,6 @@ aes_err mix_columns(int (*state)[4]);
 aes_err encryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, char *plaintext, char *key, int *ciphertext);
 
 //TODO: parameter needed
-aes_err decryption();
+aes_err decryption(const int ROUND, const int KEY_SIZE, const int BLK_SIZE, int *ciphertext, char *key, int *restoretext);
 
 #endif /* AES_H_ */

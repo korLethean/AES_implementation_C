@@ -20,6 +20,7 @@ int main(void)
 
 	char *plaintext= "123456ABCD132536";
 	int ciphertext[AES_BLOCK_SIZE];
+	int ciphertext_c[AES_BLOCK_SIZE];
 	int restoretext[AES_BLOCK_SIZE];
 
 	// When change the AES mode, change this variable 0 = 128, 1 = 192, 2 = 256
@@ -86,10 +87,51 @@ int main(void)
 	else
 		printf("AES Encryption processed \n");
 
+	error_code = decryption(*AES_ROUND, *AES_KEY_SIZE, AES_BLOCK_SIZE, ciphertext, key, restoretext);
+	if(error_code == AES_ROUND_ERR)
+	{
+		printf("AES Decryption error occurred: AES support only 10, 12, 14 rounds \n");
+		return 0;
+	}
+	else if(error_code == AES_KEY_LEN_ERR)
+	{
+		printf("AES Decryption error occurred: AES support only 128, 192, 256 bits key size \n");
+		return 0;
+	}
+	else if(error_code == AES_BLK_LEN_ERR)
+	{
+		printf("AES Decryption error occurred: AES block size must be 128 bits \n");
+		return 0;
+	}
+	else if(error_code == AES_STD_ERR)
+	{
+		printf("AES Decryption error occurred: Wrong matched with key size and rounds \n");
+		return 0;
+	}
+	else if(error_code == AES_SHIFT_ERR)
+	{
+		printf("AES Decryption error occurred: Out of index bounds when shifting \n");
+		return 0;
+	}
+	else
+		printf("AES Decryption processed \n\n");
+
 	printf("Ciphertext:\t");
 	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
 		printf("%02x ", ciphertext[i]);
+	printf("\n\t\t");
+	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
+		printf("%c ", ciphertext[i]);
 	printf("\n");
+
+	printf("Restoretext:\t");
+	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
+		printf("%02x ", restoretext[i]);
+	printf("\n\t\t");
+	for(int i = 0 ; i < AES_BLOCK_SIZE ; i++)
+		printf("%c ", restoretext[i]);
+	printf("\n");
+
 
 	return 0;
 }
